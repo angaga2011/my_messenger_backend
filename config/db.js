@@ -12,7 +12,7 @@ const connectDB = async () => {
 
         await client.connect();
         console.log('MongoDB Connected...');
-        db = client.db('messenger'); // Replace with your database name
+        db = client.db('messenger'); // Replace 'messenger' with your database name
     } catch (err) {
         console.error(err.message);
         process.exit(1);
