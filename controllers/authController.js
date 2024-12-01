@@ -4,15 +4,15 @@ const { getDB } = require('../config/db');
 
 // Register a new user
 exports.registerUser = async (req, res) => {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
     const db = getDB();
 
     try {
-        const userExists = await db.collection('user').findOne({ username });
+        const userExists = await db.collection('user').findOne({ email });
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        await db.collection('user').insertOne({ username, password: hashedPassword });
+        await db.collection('user').insertOne({ username, email, password: hashedPassword });
 
         res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
@@ -22,11 +22,11 @@ exports.registerUser = async (req, res) => {
 
 // Login user
 exports.loginUser = async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     const db = getDB();
 
     try {
-        const user = await db.collection('user').findOne({ username });
+        const user = await db.collection('user').findOne({ email });
         if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
         const isMatch = await bcrypt.compare(password, user.password);
