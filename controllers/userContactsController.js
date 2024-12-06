@@ -1,10 +1,13 @@
 const { getDB } = require('../config/db');
 
 exports.addContact = async (req, res) => {
-    const { email, contacts } = req.body; // `email` is the user's email, `contacts` is the array of new contact emails.
+    const { contacts } = req.body; // `contacts` is the array of new contact emails.
     const db = getDB();
 
     try {
+        // Access the user's email from the token
+        const userEmail = req.user.email;
+
         // Validate if all provided contacts exist in the `user` collection
         const validContacts = [];
         for (const contactEmail of contacts || []) {
@@ -16,27 +19,19 @@ exports.addContact = async (req, res) => {
         }
 
         // Check if the user already has a record in the `user_contacts` collection
-        const userContactsRecord = await db.collection('user_contacts').findOne({ email });
+        const userContactsRecord = await db.collection('user_contacts').findOne({ email: userEmail });
 
         if (userContactsRecord) {
             // User exists, update the `contacts` array to include the valid new ones (avoiding duplicates)
             const updatedContacts = [...new Set([...userContactsRecord.contacts, ...validContacts])];
             await db.collection('user_contacts').updateOne(
-                { email },
+                { email: userEmail },
                 { $set: { contacts: updatedContacts } }
             );
             res.status(200).json({ message: 'Contacts updated successfully' });
         } else {
-            // User doesn't have a record, create one with an empty contacts array
-            await db.collection('user_contacts').insertOne({ email, contacts: [] });
-
-            // If valid contacts are provided, add them
-            if (validContacts.length > 0) {
-                await db.collection('user_contacts').updateOne(
-                    { email },
-                    { $set: { contacts: validContacts } }
-                );
-            }
+            // User doesn't have a record, create one with the provided contacts
+            await db.collection('user_contacts').insertOne({ email: userEmail, contacts: validContacts });
             res.status(201).json({ message: 'Contact record created successfully' });
         }
     } catch (err) {

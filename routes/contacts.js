@@ -23,7 +23,7 @@ const authenticate = (req, res, next) => {
     }
 };
 
-router.post('/addContact', addContact);
+router.post('/addContact', authenticate, addContact);
 
 // Route to get contacts for the authenticated user
 router.get('/get-user-contacts', authenticate, getUserContacts);
