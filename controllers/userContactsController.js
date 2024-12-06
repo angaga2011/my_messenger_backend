@@ -39,6 +39,7 @@ exports.addContact = async (req, res) => {
     }
 };
 
+
 exports.getUserContacts = async (req, res) => {
     const db = getDB();
 
