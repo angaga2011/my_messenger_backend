@@ -10,6 +10,6 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 
 // Testing Authentication for Returning Users
-router.post('/authenticate', authenticateUser);
+router.get('/authenticate', authenticateUser);
 
 module.exports = router;
