@@ -1,5 +1,5 @@
 const express = require('express');
-const { addContact } = require('../controllers/userContactsController');
+const { addContact, getUserContacts } = require('../controllers/userContactsController');
 const { verifyToken } = require('../utils/jwtUtils');
 
 const router = express.Router();
