@@ -26,13 +26,17 @@ exports.loginUser = async (req, res) => {
     const db = getDB();
 
     try {
+        // Fetch the user from the database by email
         const user = await db.collection('user').findOne({ email });
         if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
+        // Verify the password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // Generate a JWT with the user's email
+        const token = generateToken({ email: user.email });
+        
         res.status(200).json({ token });
     } catch (err) {
         res.status(500).json({ error: err.message });

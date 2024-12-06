@@ -49,18 +49,17 @@ exports.getUserContacts = async (req, res) => {
     const db = getDB();
 
     try {
-        // Get the user's email from the authenticated token (added by the middleware)
-        console.log(req.user.email)
+        // Access the user's email from the token
         const userEmail = req.user.email;
+        console.log('User email:', userEmail);
 
-        // Fetch the user's contacts from the `user_contacts` collection
+        // Fetch the user's contacts from the database
         const userContactsRecord = await db.collection('user_contacts').findOne({ email: userEmail });
 
         if (!userContactsRecord) {
             return res.status(404).json({ message: 'No contacts found for the user' });
         }
 
-        // Respond with the user's contacts
         res.status(200).json(userContactsRecord);
     } catch (err) {
         res.status(500).json({ error: err.message });
