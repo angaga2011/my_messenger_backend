@@ -23,8 +23,14 @@ const io = new Server(server, {
     },
 });
 
+const corsOptions = {
+    origin: 'https://messenger-frontend-vz3n.onrender.com',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Connect to MongoDB
