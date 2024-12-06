@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser } = require('../controllers/authController');
+const { registerUser, loginUser, authenticateUser } = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -8,5 +8,8 @@ router.post('/register', registerUser);
 
 // Login user
 router.post('/login', loginUser);
+
+// Testing Authentication for Returning Users
+router.post('/authenticate', authenticateUser);
 
 module.exports = router;

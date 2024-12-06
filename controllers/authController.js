@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { getDB } = require('../config/db');
-const { generateToken } = require('../utils/jwtUtils');
+const { generateToken, verifyToken } = require('../utils/jwtUtils');
 
 // Register a new user
 exports.registerUser = async (req, res) => {
@@ -40,5 +40,37 @@ exports.loginUser = async (req, res) => {
         res.status(200).json({ token });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+};
+
+
+// Testing Authentication for Returning Users
+const jwt = require('jsonwebtoken');
+
+exports.authenticateUser = async (req, res) => {
+    try {
+        // Retrieve the token from the Authorization header
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({ valid: false, message: 'No token provided' });
+        }
+
+        // Verify the token using the JWT secret
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Optionally: Check if the user exists in the database (ensures the token is for a valid user)
+        const db = getDB();
+        const user = await db.collection('user').findOne({ email: decoded.email });
+        if (!user) {
+            return res.status(401).json({ valid: false, message: 'User not found' });
+        }
+
+        // If all checks pass, return true
+        return res.status(200).json({ valid: true });
+    } catch (err) {
+        // If verification fails, return false
+        return res.status(401).json({ valid: false, message: 'Invalid token' });
     }
 };
