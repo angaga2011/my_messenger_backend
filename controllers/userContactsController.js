@@ -50,6 +50,7 @@ exports.getUserContacts = async (req, res) => {
 
     try {
         // Get the user's email from the authenticated token (added by the middleware)
+        console.log(req.user.email)
         const userEmail = req.user.email;
 
         // Fetch the user's contacts from the `user_contacts` collection

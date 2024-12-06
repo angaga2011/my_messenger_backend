@@ -16,6 +16,7 @@ const authenticate = (req, res, next) => {
 
         const decoded = verifyToken(token); // Verify the JWT
         req.user = decoded; // Attach decoded token data (e.g., email) to the request object
+        console.log("in middleware: ", req.user);
         next(); // Proceed to the controller
     } catch (err) {
         return res.status(401).json({ message: 'Unauthorized: Invalid token' });
