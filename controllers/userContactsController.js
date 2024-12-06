@@ -1,5 +1,4 @@
 const { getDB } = require('../config/db');
-const { verifyToken } = require('../utils/jwtUtils');
 
 exports.addContact = async (req, res) => {
     const { email, contacts } = req.body; // `email` is the user's email, `contacts` is the array of new contact emails.

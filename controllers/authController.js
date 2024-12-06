@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const { getDB } = require('../config/db');
+const { generateToken } = require('../utils/jwtUtils');
 
 // Register a new user
 exports.registerUser = async (req, res) => {
@@ -36,7 +36,7 @@ exports.loginUser = async (req, res) => {
 
         // Generate a JWT with the user's email
         const token = generateToken({ email: user.email });
-        
+
         res.status(200).json({ token });
     } catch (err) {
         res.status(500).json({ error: err.message });
