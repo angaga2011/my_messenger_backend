@@ -5,6 +5,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const { connectDB } = require('./config/db');
 const authRoutes = require('./routes/auth');
+const contactsRoutes = require('./routes/contacts');
 const { handleSocket } = require('./controllers/messageController');
 
 // Load environment variables
@@ -31,6 +32,7 @@ connectDB();
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/contacts', contactsRoutes);
 
 // Initialize Socket.io for handling messages
 handleSocket(io);
