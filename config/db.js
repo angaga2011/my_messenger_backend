@@ -5,14 +5,11 @@ let db;
 
 const connectDB = async () => {
     try {
-        const client = new MongoClient(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        const client = new MongoClient(process.env.MONGO_URI);
 
         await client.connect();
         console.log('MongoDB Connected...');
-        db = client.db('messenger'); // Replace 'messenger' with your database name
+        db = client.db('messenger');
     } catch (err) {
         console.error(err.message);
         process.exit(1);
