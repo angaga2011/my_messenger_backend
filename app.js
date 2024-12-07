@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const { connectDB } = require('./config/db');
 const authRoutes = require('./routes/auth');
 const contactsRoutes = require('./routes/contacts');
+const messageRoutes = require('./routes/messages');
 const { handleSocket } = require('./controllers/messageController');
 
 // Load environment variables
@@ -39,6 +40,7 @@ connectDB();
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactsRoutes);
+app.use('/api/messages', messageRoutes);
 
 // Initialize Socket.io for handling messages
 handleSocket(io);
