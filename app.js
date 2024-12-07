@@ -33,6 +33,7 @@ const corsOptions = {
 // Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(require('cookie-parser')()); // Add cookie-parser middleware
 
 // Connect to MongoDB
 connectDB();
