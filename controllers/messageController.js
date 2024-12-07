@@ -48,7 +48,7 @@ exports.getUserMessages = async (req, res) => {
         }
 
         // Respond with the array of messages
-        res.status(200).json(userMessages);
+        res.status(200).json({ messages: userMessages });
     } catch (err) {
         console.error('Error fetching user messages:', err);
         res.status(500).json({ error: err.message });
