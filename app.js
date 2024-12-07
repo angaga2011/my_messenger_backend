@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const contactsRoutes = require('./routes/contacts');
 const messageRoutes = require('./routes/messages');
 const { handleSocket } = require('./controllers/messageController');
+const cookieParser = require('cookie-parser'); // Require cookie-parser
 
 // Load environment variables
 dotenv.config();
@@ -33,7 +34,7 @@ const corsOptions = {
 // Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(require('cookie-parser')()); // Add cookie-parser middleware
+app.use(cookieParser()); // Use cookie-parser middleware
 
 // Connect to MongoDB
 connectDB();
