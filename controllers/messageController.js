@@ -1,4 +1,5 @@
 const { getDB } = require('../config/db');
+const { verifyToken } = require('../utils/jwtUtils');
 
 exports.handleSocket = (io) => {
     io.on('connection', (socket) => {
@@ -7,10 +8,14 @@ exports.handleSocket = (io) => {
         // Handle send_message event
         socket.on('send_message', async (data) => {
             console.log('Raw message data received:', data); // Add this log
-            const { sender, receiver, content } = data;
+            const { token, receiver, content } = data;
             const db = getDB();
 
             try {
+                // Verify the token and extract the sender's email
+                const decoded = verifyToken(token);
+                const sender = decoded.email;
+
                 const message = { sender, receiver, content, createdAt: new Date() };
                 await db.collection('messages').insertOne(message);
 
@@ -20,6 +25,7 @@ exports.handleSocket = (io) => {
                 console.log('Message saved and emitted:', message);
             } catch (err) {
                 console.error('Error saving message:', err.message);
+                socket.emit('message_saved', { success: false, error: err.message });
             }
         });
 
