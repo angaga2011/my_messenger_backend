@@ -56,7 +56,7 @@ exports.authenticateUser = async (req, res) => {
         }
 
         // Verify the token using the JWT secret
-        const decoded = = verifyToken(token);
+        const decoded = verifyToken(token);
 
         // Optionally: Check if the user exists in the database (ensures the token is for a valid user)
         const db = getDB();
