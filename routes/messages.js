@@ -7,8 +7,7 @@ const router = express.Router();
 // Middleware to validate JWT
 const authenticate = (req, res, next) => {
     try {
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
+        const token = req.cookies.token; // Get the token from cookies
 
         if (!token) {
             return res.status(401).json({ message: 'Unauthorized: No token provided' });

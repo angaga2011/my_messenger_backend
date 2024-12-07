@@ -37,28 +37,26 @@ exports.loginUser = async (req, res) => {
         // Generate a JWT with the user's email
         const token = generateToken({ email: user.email });
 
-        res.status(200).json({ token });
+        // Set the token as an HTTP-only cookie
+        res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'Strict' });
+
+        res.status(200).json({ message: 'Login successful' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
-
-// Testing Authentication for Returning Users
-const jwt = require('jsonwebtoken');
-
 exports.authenticateUser = async (req, res) => {
     try {
-        // Retrieve the token from the Authorization header
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
+        // Retrieve the token from cookies
+        const token = req.cookies.token;
 
         if (!token) {
             return res.status(401).json({ valid: false, message: 'No token provided' });
         }
 
         // Verify the token using the JWT secret
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = = verifyToken(token);
 
         // Optionally: Check if the user exists in the database (ensures the token is for a valid user)
         const db = getDB();
