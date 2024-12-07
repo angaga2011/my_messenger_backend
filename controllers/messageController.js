@@ -38,15 +38,21 @@ exports.handleSocket = (io) => {
 
 exports.getUserMessages = async (req, res) => {
     const db = getDB();
+    const { contactEmail } = req.query; // Get the contact email from query parameters
 
     try {
         // Access the user's email from the token
         const userEmail = req.user.email;
         console.log('User email:', userEmail);
 
-        // Fetch all messages where the user is either the sender or receiver
+        // Fetch all messages between the user and the selected contact
         const userMessages = await db.collection('messages')
-            .find({ $or: [{ sender: userEmail }, { receiver: userEmail }] })
+            .find({
+                $or: [
+                    { sender: userEmail, receiver: contactEmail },
+                    { sender: contactEmail, receiver: userEmail }
+                ]
+            })
             .toArray(); // Convert the cursor to an array
 
         if (!userMessages || userMessages.length === 0) {
