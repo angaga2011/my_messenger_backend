@@ -1,20 +1,12 @@
 const { getDB } = require('../config/db');
-const { verifyToken } = require('../utils/jwtUtils'); // Import the verifyToken function
 
 exports.addContact = async (req, res) => {
     const { contacts } = req.body; // `contacts` is the array of new contact emails.
     const db = getDB();
 
     try {
-        // Extract the JWT from the cookie
-        const token = req.cookies.token;
-        if (!token) {
-            return res.status(401).json({ message: 'Authentication token is missing' });
-        }
-
-        // Verify the JWT and extract the user's email
-        const decoded = verifyToken(token);
-        const userEmail = decoded.email;
+        // Access the user's email from the token
+        const userEmail = req.user.email;
 
         // Validate if all provided contacts exist in the `user` collection
         const validContacts = [];
@@ -51,15 +43,9 @@ exports.getUserContacts = async (req, res) => {
     const db = getDB();
 
     try {
-        // Extract the JWT from the cookie
-        const token = req.cookies.token;
-        if (!token) {
-            return res.status(401).json({ message: 'Authentication token is missing' });
-        }
-
-        // Verify the JWT and extract the user's email
-        const decoded = verifyToken(token);
-        const userEmail = decoded.email;
+        // Access the user's email from the token
+        const userEmail = req.user.email;
+        console.log('User email:', userEmail);
 
         // Fetch the user's contacts from the database
         const userContactsRecord = await db.collection('user_contacts').findOne({ email: userEmail });
