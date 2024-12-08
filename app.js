@@ -27,6 +27,7 @@ const io = new Server(server, {
 
 const corsOptions = {
     origin: 'https://messenger-frontend-vz3n.onrender.com',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true
 };
 

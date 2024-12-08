@@ -12,7 +12,6 @@ exports.generateToken = (payload) => {
 // Verify JWT token
 exports.verifyToken = (token) => {
     try {
-        console.log("Decoded token:", jwt.verify(token, process.env.JWT_SECRET));
         return jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
         throw new Error('Invalid token');
