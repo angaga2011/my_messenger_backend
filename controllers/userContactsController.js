@@ -28,12 +28,29 @@ exports.addContact = async (req, res) => {
                 { email: userEmail },
                 { $set: { contacts: updatedContacts } }
             );
-            res.status(200).json({ message: 'Contacts updated successfully' });
         } else {
             // User doesn't have a record, create one with the provided contacts
             await db.collection('user_contacts').insertOne({ email: userEmail, contacts: validContacts });
-            res.status(201).json({ message: 'Contact record created successfully' });
         }
+
+        // Update each valid contact's record to include the user's email
+        for (const contactEmail of validContacts) {
+            const contactRecord = await db.collection('user_contacts').findOne({ email: contactEmail });
+
+            if (contactRecord) {
+                // Contact exists, update their `contacts` array to include the user's email (avoiding duplicates)
+                const updatedContacts = [...new Set([...contactRecord.contacts, userEmail])];
+                await db.collection('user_contacts').updateOne(
+                    { email: contactEmail },
+                    { $set: { contacts: updatedContacts } }
+                );
+            } else {
+                // Contact doesn't have a record, create one with the user's email
+                await db.collection('user_contacts').insertOne({ email: contactEmail, contacts: [userEmail] });
+            }
+        }
+
+        res.status(200).json({ message: 'Contacts updated successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
