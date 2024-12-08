@@ -5,9 +5,16 @@ exports.handleSocket = (io) => {
     io.on('connection', (socket) => {
         console.log('A user connected:', socket.id);
 
+        // Handle register_email event
+        socket.on('register_email', (data) => {
+            const { email } = data;
+            socket.join(email);
+            console.log(`Socket ${socket.id} joined room: ${email}`);
+        });
+
         // Handle send_message event
         socket.on('send_message', async (data) => {
-            console.log('Raw message data received:', data); // Add this log
+            console.log('Raw message data received:', data);
             const { token, receiver, content } = data;
             const db = getDB();
 
@@ -20,8 +27,7 @@ exports.handleSocket = (io) => {
                 await db.collection('messages').insertOne(message);
 
                 // Emit the message to the receiver's room
-                // io.to(receiver).emit('receive_message', message);
-                socket.emit('receive_message', message);
+                io.to(receiver).emit('receive_message', message);
                 socket.emit('message_saved', { success: true });
                 console.log('Message saved and emitted:', message);
             } catch (err) {
