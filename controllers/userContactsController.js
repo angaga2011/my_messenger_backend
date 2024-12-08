@@ -1,5 +1,4 @@
 const { getDB } = require('../config/db');
-const { io } = require('../app'); // Assuming you export io from your app.js
 
 exports.addContact = async (req, res) => {
     const { contacts } = req.body; // `contacts` is the array of new contact emails.
@@ -49,9 +48,6 @@ exports.addContact = async (req, res) => {
                 // Contact doesn't have a record, create one with the user's email
                 await db.collection('user_contacts').insertOne({ email: contactEmail, contacts: [userEmail] });
             }
-
-            // Emit a WebSocket event to notify the contact
-            io.to(contactEmail).emit('contact_added', { email: userEmail });
         }
 
         res.status(200).json({ message: 'Contacts updated successfully' });
