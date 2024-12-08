@@ -20,7 +20,8 @@ exports.handleSocket = (io) => {
                 await db.collection('messages').insertOne(message);
 
                 // Emit the message to the receiver's room
-                io.to(receiver).emit('receive_message', message);
+                // io.to(receiver).emit('receive_message', message);
+                socket.emit('receive_message', message);
                 socket.emit('message_saved', { success: true });
                 console.log('Message saved and emitted:', message);
             } catch (err) {
