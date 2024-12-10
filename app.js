@@ -5,9 +5,10 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const { connectDB } = require('./config/db');
 const authRoutes = require('./routes/auth');
-const contactsRoutes = require('./routes/contacts');
+const contactsRoutes = require('./routes/userContacts');
 const messageRoutes = require('./routes/messages');
-const { handleSocket } = require('./controllers/messageController');
+const accountRoutes = require('./routes/userAccount');
+const { handleSocket } = require('./controllers/messagesController');
 
 // Load environment variables
 dotenv.config();
@@ -41,6 +42,7 @@ connectDB();
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactsRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/account', accountRoutes);
 
 // Initialize Socket.io for handling messages
 handleSocket(io);

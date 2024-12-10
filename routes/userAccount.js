@@ -1,10 +1,10 @@
 const express = require('express');
-const { updateUserProfile } = require('../controllers/userAccountController.js'); 
+const { updateUserProfile, upload } = require('../controllers/userAccountController');
 const { verifyToken } = require('../utils/jwtUtils');
 
 const router = express.Router();
 
-// Middleware to authenticate user
+// Middleware to validate JWT
 const authenticate = (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
@@ -14,15 +14,15 @@ const authenticate = (req, res, next) => {
             return res.status(401).json({ message: 'Unauthorized: No token provided' });
         }
 
-        const decoded = verifyToken(token); 
-        req.user = decoded;                
-        next();                            
+        const decoded = verifyToken(token); // Verify the JWT
+        req.user = decoded; // Attach the decoded email to req.user
+        next(); // Proceed to the controller
     } catch (err) {
         return res.status(401).json({ message: 'Unauthorized: Invalid token' });
     }
 };
 
-// Add route to update user profile
-router.put('/update-profile', authenticate, updateUserProfile);
+// POST route to update profile and upload avatar
+router.post('/update-profile', authenticate, upload.single('avatar'), updateUserProfile);
 
 module.exports = router;

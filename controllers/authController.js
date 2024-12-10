@@ -43,10 +43,6 @@ exports.loginUser = async (req, res) => {
     }
 };
 
-
-// Testing Authentication for Returning Users
-const jwt = require('jsonwebtoken');
-
 exports.authenticateUser = async (req, res) => {
     try {
         // Retrieve the token from the Authorization header
@@ -58,7 +54,7 @@ exports.authenticateUser = async (req, res) => {
         }
 
         // Verify the token using the JWT secret
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = verifyToken(token);
 
         // Optionally: Check if the user exists in the database (ensures the token is for a valid user)
         const db = getDB();

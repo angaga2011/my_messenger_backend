@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUserMessages } = require('../controllers/messageController');
+const { getUserMessages } = require('../controllers/messagesController');
 const { verifyToken } = require('../utils/jwtUtils');
 
 const router = express.Router();
