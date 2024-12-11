@@ -8,6 +8,10 @@ const authRoutes = require('./routes/auth');
 const contactsRoutes = require('./routes/contacts');
 const messageRoutes = require('./routes/messages');
 const { handleSocket } = require('./controllers/messageController');
+const accountDeleteRoutes = require('./routes/accountDelete');
+const accountUpdateRoutes = require('./routes/accountUpdate');
+
+
 
 // Load environment variables
 dotenv.config();
@@ -41,6 +45,9 @@ connectDB();
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactsRoutes);
 app.use('/api/messages', messageRoutes);
+
+app.use('/api/account', accountUpdateRoutes);
+app.use('/api/account', accountDeleteRoutes);
 
 // Initialize Socket.io for handling messages
 handleSocket(io);
