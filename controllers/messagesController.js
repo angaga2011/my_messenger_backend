@@ -1,5 +1,4 @@
 const { getDB } = require('../config/db');
-const { verifyToken } = require('../utils/jwtUtils');
 
 exports.handleSocket = (io) => {
     io.on('connection', (socket) => {
@@ -15,8 +14,7 @@ exports.handleSocket = (io) => {
         // Handle send_message event
         socket.on('send_message', async (messageData) => {
             const db = getDB();
-            const { token, receiver, content, isGroup } = messageData;
-            const sender = socket.id; // Assuming the sender's email is stored in socket.id
+            const { sender, receiver, content, isGroup } = messageData;
 
             const message = {
                 sender,
