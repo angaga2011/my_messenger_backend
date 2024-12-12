@@ -73,7 +73,18 @@ exports.getUserContacts = async (req, res) => {
             return res.status(404).json({ message: 'No contacts found for the user' });
         }
 
-        res.status(200).json(userContactsRecord);
+        // Fetch usernames for each contact
+        const contactsWithUsernames = await Promise.all(
+            userContactsRecord.contacts.map(async (contactEmail) => {
+                const user = await db.collection('user').findOne({ email: contactEmail });
+                return {
+                    email: contactEmail,
+                    username: user ? user.username : null,
+                };
+            })
+        );
+
+        res.status(200).json({ contacts: contactsWithUsernames });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
