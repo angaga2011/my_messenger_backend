@@ -1,5 +1,5 @@
 const express = require('express');
-const { addContact, getUserContacts, deleteContact } = require('../controllers/userContactsController');
+const { createGroup, addParticipant, deleteParticipant, deleteGroup, getUserGroups } = require('../controllers/userGroupsController');
 const { verifyToken } = require('../utils/jwtUtils');
 
 const router = express.Router();
@@ -22,13 +22,19 @@ const authenticate = (req, res, next) => {
     }
 };
 
-// Route to add contacts
-router.post('/addContact', authenticate, addContact);
+// POST route to create a group
+router.post('/create-group', authenticate, createGroup);
 
-// Route to get contacts for the authenticated user
-router.get('/get-user-contacts', authenticate, getUserContacts);
+// POST route to add a participant
+router.post('/add-participant', authenticate, addParticipant);
 
-// Route to delete a contact
-router.delete('/deleteContact', authenticate, deleteContact);
+// DELETE route to delete a participant
+router.delete('/delete-participant', authenticate, deleteParticipant);
+
+// DELETE route to delete a group
+router.delete('/delete-group', authenticate, deleteGroup);
+
+// GET route to fetch user groups
+router.get('/get-user-groups', authenticate, getUserGroups);
 
 module.exports = router;

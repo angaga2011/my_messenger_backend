@@ -34,5 +34,23 @@ exports.updateUserProfile = async (req, res) => {
     }
 };
 
+// Delete user account
+exports.deleteUserAccount = async (req, res) => {
+    const db = getDB();
+    const userEmail = req.user.email;
+
+    try {
+        const result = await db.collection('user').deleteOne({ email: userEmail });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'Account deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 // Export multer upload configuration
 exports.upload = upload;

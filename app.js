@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const contactsRoutes = require('./routes/userContacts');
 const messageRoutes = require('./routes/messages');
 const accountRoutes = require('./routes/userAccount');
+const groupRoutes = require('./routes/userGroups');
 const { handleSocket } = require('./controllers/messagesController');
 
 // Load environment variables
@@ -43,6 +44,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactsRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/account', accountRoutes);
+app.use('/api/groups', groupRoutes);
 
 // Initialize Socket.io for handling messages
 handleSocket(io);

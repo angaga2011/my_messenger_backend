@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateUserProfile, upload } = require('../controllers/userAccountController');
+const { updateUserProfile, deleteUserAccount, upload } = require('../controllers/userAccountController');
 const { verifyToken } = require('../utils/jwtUtils');
 
 const router = express.Router();
@@ -24,5 +24,8 @@ const authenticate = (req, res, next) => {
 
 // POST route to update profile and upload avatar
 router.post('/update-profile', authenticate, upload.single('avatar'), updateUserProfile);
+
+// DELETE route to delete user account
+router.delete('/delete-account', authenticate, deleteUserAccount);
 
 module.exports = router;

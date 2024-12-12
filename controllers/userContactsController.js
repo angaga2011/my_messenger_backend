@@ -1,5 +1,6 @@
 const { getDB } = require('../config/db');
 
+// Add Contact function
 exports.addContact = async (req, res) => {
     const { contacts } = req.body; // `contacts` is the array of new contact emails.
     const db = getDB();
@@ -56,6 +57,7 @@ exports.addContact = async (req, res) => {
     }
 };
 
+// Get User Contacts function
 exports.getUserContacts = async (req, res) => {
     const db = getDB();
 
@@ -72,6 +74,45 @@ exports.getUserContacts = async (req, res) => {
         }
 
         res.status(200).json(userContactsRecord);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Delete Contact function
+exports.deleteContact = async (req, res) => {
+    const { contactEmail } = req.body; // `contactEmail` is the email of the contact to be deleted.
+    const db = getDB();
+
+    try {
+        // Access the user's email from the token
+        const userEmail = req.user.email;
+
+        // Remove the contact from the user's contacts
+        const userContactsRecord = await db.collection('user_contacts').findOne({ email: userEmail });
+
+        if (!userContactsRecord) {
+            return res.status(404).json({ message: 'No contacts found for the user' });
+        }
+
+        const updatedContacts = userContactsRecord.contacts.filter(email => email !== contactEmail);
+        await db.collection('user_contacts').updateOne(
+            { email: userEmail },
+            { $set: { contacts: updatedContacts } }
+        );
+
+        // Remove the user from the contact's contacts
+        const contactRecord = await db.collection('user_contacts').findOne({ email: contactEmail });
+
+        if (contactRecord) {
+            const updatedContactContacts = contactRecord.contacts.filter(email => email !== userEmail);
+            await db.collection('user_contacts').updateOne(
+                { email: contactEmail },
+                { $set: { contacts: updatedContactContacts } }
+            );
+        }
+
+        res.status(200).json({ message: 'Contact deleted successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
