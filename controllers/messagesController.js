@@ -13,31 +13,38 @@ exports.handleSocket = (io) => {
         });
 
         // Handle send_message event
-        socket.on('send_message', async (data) => {
-            console.log('Raw message data received:', data);
-            const { token, receiver, content, isGroup } = data;
+        socket.on('send_message', async (messageData) => {
             const db = getDB();
+            const { token, receiver, content, isGroup } = messageData;
+            const sender = socket.id; // Assuming the sender's email is stored in socket.id
+
+            const message = {
+                sender,
+                receiver,
+                content,
+                createdAt: new Date(),
+                isGroup,
+            };
 
             try {
-                // Verify the token and extract the sender's email
-                const decoded = verifyToken(token);
-                const sender = decoded.email;
-
-                const message = { sender, receiver, content, createdAt: new Date(), isGroup };
+                // Save the message to the database
                 await db.collection('messages').insertOne(message);
 
+                // Emit the message to the receiver(s)
                 if (isGroup) {
                     // Fetch group participants
                     const group = await db.collection('user_groups').findOne({ groupName: receiver });
                     if (group) {
                         group.participants.forEach(participant => {
-                            io.to(participant).emit('receive_message', message);
+                            if (participant !== sender) {
+                                io.to(participant).emit('receive_message', message);
+                            }
                         });
                     }
                 } else {
                     io.to(receiver).emit('receive_message', message);
                 }
-                
+
                 socket.emit('message_saved', { success: true });
                 console.log('Message saved and emitted:', message);
             } catch (err) {
