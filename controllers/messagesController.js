@@ -15,7 +15,7 @@ exports.handleSocket = (io) => {
         // Handle send_message event
         socket.on('send_message', async (data) => {
             console.log('Raw message data received:', data);
-            const { token, receiver, content } = data;
+            const { token, receiver, content, isGroup } = data;
             const db = getDB();
 
             try {
@@ -23,11 +23,21 @@ exports.handleSocket = (io) => {
                 const decoded = verifyToken(token);
                 const sender = decoded.email;
 
-                const message = { sender, receiver, content, createdAt: new Date() };
+                const message = { sender, receiver, content, createdAt: new Date(), isGroup };
                 await db.collection('messages').insertOne(message);
 
-                // Emit the message to the receiver's room
-                io.to(receiver).emit('receive_message', message);
+                if (isGroup) {
+                    // Fetch group participants
+                    const group = await db.collection('user_groups').findOne({ groupName: receiver });
+                    if (group) {
+                        group.participants.forEach(participant => {
+                            io.to(participant).emit('receive_message', message);
+                        });
+                    }
+                } else {
+                    io.to(receiver).emit('receive_message', message);
+                }
+                
                 socket.emit('message_saved', { success: true });
                 console.log('Message saved and emitted:', message);
             } catch (err) {
@@ -44,32 +54,46 @@ exports.handleSocket = (io) => {
 };
 
 exports.getUserMessages = async (req, res) => {
-    const db = getDB();
-    const { contactEmail } = req.query; // Get the contact email from query parameters
+  const db = getDB();
+  const { contactEmail } = req.query; // Get the contact email from query parameters
 
-    try {
-        // Access the user's email from the token
-        const userEmail = req.user.email;
-        console.log('User email:', userEmail);
+  try {
+    // Access the user's email from the token
+    const userEmail = req.user.email;
+    console.log('User email:', userEmail);
 
-        // Fetch all messages between the user and the selected contact
-        const userMessages = await db.collection('messages')
-            .find({
-                $or: [
-                    { sender: userEmail, receiver: contactEmail },
-                    { sender: contactEmail, receiver: userEmail }
-                ]
-            })
-            .toArray(); // Convert the cursor to an array
+    // Fetch all messages between the user and the selected contact or group
+    const userGroups = await getUserGroups(userEmail, db);
+    const userMessages = await db.collection('messages')
+      .find({
+        $or: [
+          { sender: userEmail, receiver: contactEmail },
+          { sender: contactEmail, receiver: userEmail },
+          { receiver: { $in: userGroups } }
+        ]
+      })
+      .toArray(); // Convert the cursor to an array
 
-        if (!userMessages || userMessages.length === 0) {
-            return res.status(404).json({ message: 'No messages found for the user' });
-        }
-
-        // Respond with the array of messages
-        res.status(200).json({ messages: userMessages });
-    } catch (err) {
-        console.error('Error fetching user messages:', err);
-        res.status(500).json({ error: err.message });
+    if (!userMessages || userMessages.length === 0) {
+      return res.status(404).json({ message: 'No messages found for the user' });
     }
+
+    // Ensure all messages have the isGroup field
+    const messagesWithIsGroup = userMessages.map(message => ({
+      ...message,
+      isGroup: message.isGroup || false
+    }));
+
+    // Respond with the array of messages
+    res.status(200).json({ messages: messagesWithIsGroup });
+  } catch (err) {
+    console.error('Error fetching user messages:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Helper function to get the groups a user is part of
+const getUserGroups = async (userEmail, db) => {
+    const groups = await db.collection('user_groups').find({ participants: userEmail }).toArray();
+    return groups.map(group => group.groupName);
 };
