@@ -36,8 +36,9 @@ exports.loginUser = async (req, res) => {
 
         // Generate a JWT with the user's email
         const token = generateToken({ email: user.email });
+        const username = user.username;
 
-        res.status(200).json({ token });
+        res.status(200).json({ token, username });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
