@@ -92,7 +92,7 @@ exports.getUserContacts = async (req, res) => {
 
 // Delete Contact function
 exports.deleteContact = async (req, res) => {
-    const { contactEmail } = req.body; // `contactEmail` is the email of the contact to be deleted.
+    const { contactEmail } = req.query; // Get the contact email from query parameters
     const db = getDB();
 
     try {

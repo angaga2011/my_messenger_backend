@@ -23,12 +23,12 @@ const authenticate = (req, res, next) => {
 };
 
 // Route to add contacts
-router.post('/addContact', authenticate, addContact);
+router.post('/add-contact', authenticate, addContact);
 
 // Route to get contacts for the authenticated user
 router.get('/get-user-contacts', authenticate, getUserContacts);
 
 // Route to delete a contact
-router.delete('/deleteContact', authenticate, deleteContact);
+router.delete('/delete-contact', authenticate, deleteContact);
 
 module.exports = router;

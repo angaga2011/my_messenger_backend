@@ -83,7 +83,7 @@ exports.deleteParticipant = async (req, res) => {
 
 // Delete Group function
 exports.deleteGroup = async (req, res) => {
-    const { groupName } = req.body;
+    const { groupName } = req.query; // Get the group name from query parameters
     const db = getDB();
 
     try {
