@@ -69,13 +69,16 @@ exports.getUserMessages = async (req, res) => {
 
     // Fetch all messages between the user and the selected contact or group
     const userGroups = await getUserGroups(userEmail, db);
+    const isGroup = userGroups.includes(contactEmail);
+
     const userMessages = await db.collection('messages')
       .find({
-        $or: [
-          { sender: userEmail, receiver: contactEmail },
-          { sender: contactEmail, receiver: userEmail },
-          { receiver: { $in: userGroups } }
-        ]
+        $or: isGroup
+          ? [{ receiver: contactEmail }] // Fetch messages for the selected group
+          : [
+              { sender: userEmail, receiver: contactEmail },
+              { sender: contactEmail, receiver: userEmail }
+            ] // Fetch messages for the selected personal chat
       })
       .toArray(); // Convert the cursor to an array
 
@@ -99,6 +102,6 @@ exports.getUserMessages = async (req, res) => {
 
 // Helper function to get the groups a user is part of
 const getUserGroups = async (userEmail, db) => {
-    const groups = await db.collection('user_groups').find({ participants: userEmail }).toArray();
-    return groups.map(group => group.groupName);
+  const groups = await db.collection('user_groups').find({ participants: userEmail }).toArray();
+  return groups.map(group => group.groupName);
 };
