@@ -88,7 +88,7 @@ exports.deleteGroup = async (req, res) => {
 
     try {
         // Delete the group
-        const result = await db.collection('user_groups').deleteOne({ groupName });
+        const result = await db.collection('user_groups').deleteOne({ groupName: groupName });
 
         if (result.deletedCount === 0) {
             return res.status(404).json({ message: 'Group not found' });
