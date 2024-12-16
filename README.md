@@ -21,14 +21,18 @@ This project is a web-based messenger application that allows users to **sign up
 
 ### Implemented Features ✅
 - User **registration** and **authentication**
+- Account Management (Create/Delete an Account)
 - Real-time messaging with **Socket.io**
+- Message History (Retrieve saved messages in chats)
 - Group chat creation and messaging
 - Dark mode support 🌙
-- Contact management (add/delete contacts or groups)
+- Contact management (View, Add/Delete Contacts or Groups)
+- Storage of all user data (Necessary Encryption Provided)
+- Logout
 
 ### In-Progress Features ⚠️
 - User profile management
-- Adding or deleting participants in an existing group
+- Renaming Group, Adding or Deleting Participants in an Existing Group
 
 ### Planned Features (Stretch Goals) 🛠💧
 - Media sharing (videos, audio) in chats
@@ -36,6 +40,7 @@ This project is a web-based messenger application that allows users to **sign up
 - Search functionality for messages and conversations
 - Push notifications for new messages
 - Message read receipts
+- Realtime Calls
 
 ---
 
