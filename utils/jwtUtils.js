@@ -17,3 +17,5 @@ exports.verifyToken = (token) => {
         throw new Error('Invalid token');
     }
 };
+
+// Separate JWT generatioan and verification functions

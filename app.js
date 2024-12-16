@@ -33,22 +33,22 @@ const corsOptions = {
 };
 
 // Middleware
-app.use(cors(corsOptions));
-app.use(express.json());
+app.use(cors(corsOptions)); // Enable CORS with the specified options
+app.use(express.json()); // Parse incoming JSON requests
 
 // Connect to MongoDB
 connectDB();
 
 // API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/contacts', contactsRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/account', accountRoutes);
-app.use('/api/groups', groupRoutes);
+app.use('/api/auth', authRoutes); // Authentication routes
+app.use('/api/contacts', contactsRoutes); // User contacts routes
+app.use('/api/messages', messageRoutes); // Messaging routes
+app.use('/api/account', accountRoutes); // User account routes
+app.use('/api/groups', groupRoutes); // User groups routes
 
 // Initialize Socket.io for handling messages
 handleSocket(io);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, '0.0.0.0', () => console.log(`Server running on http://0.0.0.0:${PORT}`));
+server.listen(PORT, '0.0.0.0', () => console.log(`Server running on http://0.0.0.0:${PORT}`)); // Listen on the specified port (if running locally) or 5000 (if running on Heroku)

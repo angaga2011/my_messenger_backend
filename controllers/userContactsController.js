@@ -6,7 +6,6 @@ exports.addContact = async (req, res) => {
     const db = getDB();
 
     try {
-        // Access the user's email from the token
         const userEmail = req.user.email;
 
         // Validate if all provided contacts exist in the `user` collection

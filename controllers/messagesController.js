@@ -1,5 +1,6 @@
 const { getDB } = require('../config/db');
 
+// Function to provide realtime messaging functionality
 exports.handleSocket = (io) => {
     io.on('connection', (socket) => {
         console.log('A user connected:', socket.id);
@@ -28,9 +29,9 @@ exports.handleSocket = (io) => {
                 // Save the message to the database
                 await db.collection('messages').insertOne(message);
 
-                // Emit the message to the receiver(s)
+                // Emit the message to the receiver(s). isGroup determines if the message is for a group or a personal chat, changing the logic of handling it.
                 if (isGroup) {
-                    // Fetch group participants
+                    // Fetch group participants from db and emit the message to all participants except the sender.
                     const group = await db.collection('user_groups').findOne({ groupName: receiver });
                     if (group) {
                         group.participants.forEach(participant => {
@@ -58,12 +59,12 @@ exports.handleSocket = (io) => {
     });
 };
 
+// Function to fetch all previous messages between the user and a contact
 exports.getUserMessages = async (req, res) => {
   const db = getDB();
-  const { contactEmail } = req.query; // Get the contact email from query parameters
+  const { contactEmail } = req.query;
 
   try {
-    // Access the user's email from the token
     const userEmail = req.user.email;
     console.log('User email:', userEmail);
 
@@ -86,7 +87,7 @@ exports.getUserMessages = async (req, res) => {
       return res.status(404).json({ message: 'No messages found for the user' });
     }
 
-    // Ensure all messages have the isGroup field
+    // Ensure all messages have the isGroup field (Before feature was addes, all messages did not have this field)
     const messagesWithIsGroup = userMessages.map(message => ({
       ...message,
       isGroup: message.isGroup || false

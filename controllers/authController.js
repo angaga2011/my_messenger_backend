@@ -2,15 +2,17 @@ const bcrypt = require('bcryptjs');
 const { getDB } = require('../config/db');
 const { generateToken, verifyToken } = require('../utils/jwtUtils');
 
-// Register a new user
+// Register a new user (Email serves as the unique identifier)
 exports.registerUser = async (req, res) => {
     const { username, email, password } = req.body;
     const db = getDB();
 
     try {
+        // Check if the user already exists
         const userExists = await db.collection('user').findOne({ email });
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
+        // Hash the password and insert the new user into the database
         const hashedPassword = await bcrypt.hash(password, 10);
         await db.collection('user').insertOne({ username, email, password: hashedPassword });
 
@@ -44,6 +46,7 @@ exports.loginUser = async (req, res) => {
     }
 };
 
+// Function to authenticate a returning user until the token expires
 exports.authenticateUser = async (req, res) => {
     try {
         // Retrieve the token from the Authorization header

@@ -1,24 +1,22 @@
 const { getDB } = require('../config/db');
 const multer = require('multer');
 
-// Configure multer for file uploads
+// Configure multer for file uploads (user avatars)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+// Function to update all assets of user profile (Not yet in use)
 exports.updateUserProfile = async (req, res) => {
     const db = getDB();
-    const { nickname } = req.body; // Get the new values from the request body
+    const { nickname } = req.body;
 
     try {
-        // Access the user's email from the token
         const userEmail = req.user.email;
 
-        // Define the update object dynamically
         const updateFields = {};
         if (nickname) updateFields.nickname = nickname;
         if (req.file) updateFields.avatar = req.file.buffer;
 
-        // Update the user's profile in the database
         const result = await db.collection('user').updateOne(
             { email: userEmail },
             { $set: updateFields }
@@ -52,5 +50,5 @@ exports.deleteUserAccount = async (req, res) => {
     }
 };
 
-// Export multer upload configuration
+// Export multer upload configuration (Its not yet in use)
 exports.upload = upload;
