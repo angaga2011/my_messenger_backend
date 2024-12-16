@@ -35,7 +35,7 @@ exports.updateUserProfile = async (req, res) => {
 // Delete user account
 exports.deleteUserAccount = async (req, res) => {
     const db = getDB();
-    const userEmail = req.user.email;
+    const userEmail = req.user.email; // `contactEmail` is the email of the contact to be deleted
 
     try {
         const result = await db.collection('user').deleteOne({ email: userEmail });
